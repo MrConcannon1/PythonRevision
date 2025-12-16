@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Sequences: Year 9 Revision</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        body { font-family: 'JetBrains Mono', monospace; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .pulse-ring { animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+        @keyframes pulseRing { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); } }
+        
+        /* Syntax Highlighting Colors */
+        .code-keyword { color: #c678dd; } /* Purple */
+        .code-string { color: #98c379; } /* Green */
+        .code-func { color: #61afef; } /* Blue */
+        .code-num { color: #d19a66; } /* Orange */
+        .code-var { color: #e06c75; } /* Red */
+        .code-comment { color: #5c6370; font-style: italic; } /* Grey */
+        
+        /* Interactive Elements */
+        .matching-selected {
+            @apply bg-yellow-900/50 border-yellow-400 text-white shadow-[0_0_15px_rgba(234,179,8,0.3)];
+        }
+        .matching-matched {
+            @apply bg-green-900/30 border-green-500 text-green-400 cursor-not-allowed opacity-60;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-20 shadow-lg">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-yellow-900/50 rounded flex items-center justify-center border border-yellow-500/30">
+                <i data-lucide="terminal" class="text-yellow-400 w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Year 9 Computer Science</h1>
+                <p class="text-sm font-bold text-white">Python: Sequences & Data</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <p class="text-xs text-slate-500 uppercase tracking-wider">Score</p>
+            <p id="score-display" class="text-2xl font-bold text-yellow-400 leading-none">0</p>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app" class="flex-1 flex flex-col items-center justify-center p-4 md:p-6 w-full max-w-4xl mx-auto relative">
+        <!-- Content injected via JS -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="p-4 text-center text-slate-600 text-xs uppercase tracking-widest">
+        End of Term Revision // Sequences Module
+    </footer>
+
+    <script>
+        // --- DATA STRUCTURE ---
+        const levels = [
+            {
+                id: 1,
+                title: "Level 1: Indexing & Access",
+                theory: "Lists are ordered sequences starting at index 0. We can access items directly using integer numbers, or using variables that hold integer numbers (like 'index' or 'i').",
+                questions: [
+                    {
+                        id: "L1Q1",
+                        type: "mcq",
+                        difficulty: "Low",
+                        points: 100,
+                        question: "Analyze the code below. What is the output?",
+                        codeSnippet: `
+<span class="code-var">inventory</span> = [<span class="code-string">'Sword'</span>, <span class="code-string">'Shield'</span>, <span class="code-string">'Potion'</span>, <span class="code-string">'Map'</span>]
+<span class="code-func">print</span>(<span class="code-var">inventory</span>[<span class="code-num">2</span>])
+                        `,
+                        options: [
+                            "Shield",
+                            "Potion",
+                            "Sword",
+                            "Map"
+                        ],
+                        correctAnswer: "Potion",
+                        explanation: "Python uses zero-based indexing. Index 0 is Sword, Index 1 is Shield, Index 2 is Potion.",
+                    },
+                    {
+                        id: "L1Q2",
+                        type: "mcq",
+                        difficulty: "Low",
+                        points: 100,
+                        question: "We can use variables as indices. What is the output here?",
+                        codeSnippet: `
+<span class="code-var">days</span> = [<span class="code-string">'Mon'</span>, <span class="code-string">'Tue'</span>, <span class="code-string">'Wed'</span>, <span class="code-string">'Thu'</span>]
+<span class="code-var">i</span> = <span class="code-num">1</span>
+<span class="code-func">print</span>(<span class="code-var">days</span>[<span class="code-var">i</span> + <span class="code-num">1</span>])
+                        `,
+                        options: ["Mon", "Tue", "Wed", "Thu"],
+                        correctAnswer: "Wed",
+                        explanation: "The variable i is 1. i + 1 equals 2. The item at index 2 is 'Wed' (0=Mon, 1=Tue, 2=Wed).",
+                    },
+                    {
+                        id: "L1Q3",
+                        type: "fill-blank",
+                        difficulty: "Low",
+                        points: 100,
+                        question: "Which index would you use to access the very first item in any list?",
+                        correctAnswer: "0",
+                        explanation: "All sequences in Python start at index 0.",
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Level 2: Modifying Lists",
+                theory: "Lists are 'mutable', meaning we can change them. We can overwrite items (`L[0] = 'A'`), add to the end (`.append()`), or remove items (`.pop()`).",
+                questions: [
+                    {
+                        id: "L2Q1",
+                        type: "matching",
+                        difficulty: "Low",
+                        points: 100,
+                        question: "Match the Python list method to its description.",
+                        pairs: [
+                            { term: ".append(item)", match: "Adds an item to the end of the list" },
+                            { term: ".pop()", match: "Removes and returns the last item" },
+                            { term: ".insert(i, item)", match: "Adds an item at a specific index position" },
+                            { term: "len(list)", match: "Counts how many items are in the list" }
+                        ],
+                        explanation: "Append adds to tail. Pop takes from tail. Insert puts in middle. Len counts total.",
+                    },
+                    {
+                        id: "L2Q2",
+                        type: "visual-diagnostic",
+                        difficulty: "Medium",
+                        points: 150,
+                        question: "Trace the mutation. What is the final list?",
+                        codeSnippet: `
+<span class="code-var">nums</span> = [<span class="code-num">5</span>, <span class="code-num">10</span>, <span class="code-num">15</span>]
+<span class="code-var">nums</span>[<span class="code-num">1</span>] = <span class="code-num">99</span>
+<span class="code-var">nums</span>.<span class="code-func">append</span>(<span class="code-num">20</span>)
+                        `,
+                        options: [
+                            "[5, 10, 15, 20]",
+                            "[5, 99, 15]",
+                            "[5, 99, 15, 20]",
+                            "[99, 10, 15, 20]"
+                        ],
+                        correctAnswer: "[5, 99, 15, 20]",
+                        explanation: "First, index 1 (10) becomes 99. Then, 20 is added to the end.",
+                    },
+                    {
+                        id: "L2Q3",
+                        type: "scenario",
+                        difficulty: "Medium",
+                        points: 150,
+                        question: "You have a list `tasks`. Which code correctly removes the LAST item from the list?",
+                        options: [
+                            "tasks.delete()",
+                            "tasks.remove_last()",
+                            "tasks.pop()",
+                            "tasks.append()"
+                        ],
+                        correctAnswer: "tasks.pop()",
+                        explanation: ".pop() without arguments automatically removes the item at the end of the list.",
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Level 3: Strings as Sequences",
+                theory: "Strings behave just like lists of characters. You can index them (`name[0]`), check their length (`len(name)`), and find the position of characters (`.index()`).",
+                questions: [
+                    {
+                        id: "L3Q1",
+                        type: "mcq",
+                        difficulty: "Medium",
+                        points: 150,
+                        question: "If <code>username = 'Coder99'</code>, what character does <code>username[0]</code> select?",
+                        options: ["C", "o", "9", "Error"],
+                        correctAnswer: "C",
+                        explanation: "Strings are sequences! Index 0 is the first character 'C'.",
+                    },
+                    {
+                        id: "L3Q2",
+                        type: "mcq",
+                        difficulty: "Medium",
+                        points: 150,
+                        question: "What does the `.index()` method do?",
+                        codeSnippet: `
+<span class="code-var">alpha</span> = <span class="code-string">"abcdef"</span>
+<span class="code-func">print</span>(<span class="code-var">alpha</span>.<span class="code-func">index</span>(<span class="code-string">"c"</span>))
+                        `,
+                        options: [
+                            "Returns the character at index 'c'",
+                            "Returns the position number of 'c'",
+                            "Adds 'c' to the string",
+                            "Deletes 'c' from the string"
+                        ],
+                        correctAnswer: "Returns the position number of 'c'",
+                        explanation: ".index(x) searches for x and returns its index location (e.g., 2).",
+                    },
+                    {
+                        id: "L3Q3",
+                        type: "ordering",
+                        difficulty: "High",
+                        points: 200,
+                        question: "Arrange code to input a word and print its length.",
+                        steps: [
+                            "word = input('Enter word:')",
+                            "length = len(word)",
+                            "print(length)"
+                        ],
+                        correctOrder: ["word = input('Enter word:')", "length = len(word)", "print(length)"],
+                        explanation: "Input the string first, calculate the length, then print the result.",
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "Level 4: Iteration (Loops)",
+                theory: "A 'for' loop visits every item in a sequence. We define a variable (e.g., 'item') that takes the value of each element in turn.",
+                questions: [
+                    {
+                        id: "L4Q1",
+                        type: "fill-blank",
+                        difficulty: "Medium",
+                        points: 150,
+                        question: "Complete the syntax to loop through the 'scores' list.",
+                        codeSnippet: `
+<span class="code-var">scores</span> = [<span class="code-num">10</span>, <span class="code-num">20</span>, <span class="code-num">30</span>]
+<span class="code-keyword">for</span> score <input type="text" id="blank-input-1" class="bg-slate-800 border-b-2 border-yellow-500 w-16 text-center focus:outline-none text-white font-mono" /> <span class="code-var">scores</span>:
+    <span class="code-func">print</span>(score)
+                        `,
+                        correctAnswer: "in",
+                        explanation: "The correct Python syntax is 'for [variable] IN [sequence]:'.",
+                    },
+                    {
+                        id: "L4Q2",
+                        type: "mcq",
+                        difficulty: "Medium",
+                        points: 150,
+                        question: "What output is produced by this loop?",
+                        codeSnippet: `
+<span class="code-keyword">for</span> <span class="code-var">num</span> <span class="code-keyword">in</span> [<span class="code-num">1</span>, <span class="code-num">2</span>, <span class="code-num">3</span>]:
+    <span class="code-func">print</span>(<span class="code-var">num</span> * <span class="code-num">10</span>)
+                        `,
+                        options: [
+                            "1, 2, 3",
+                            "10, 20, 30",
+                            "100, 200, 300",
+                            "111, 222, 333"
+                        ],
+                        correctAnswer: "10, 20, 30",
+                        explanation: "The loop runs 3 times. 1*10=10, 2*10=20, 3*10=30.",
+                    },
+                    {
+                        id: "L4Q3",
+                        type: "visual-diagnostic",
+                        difficulty: "High",
+                        points: 200,
+                        question: "Trace the variables. What is the final value of 'total'?",
+                        codeSnippet: `
+<span class="code-var">total</span> = <span class="code-num">0</span>
+<span class="code-keyword">for</span> <span class="code-var">x</span> <span class="code-keyword">in</span> [<span class="code-num">5</span>, <span class="code-num">2</span>, <span class="code-num">1</span>]:
+    <span class="code-var">total</span> = <span class="code-var">total</span> + <span class="code-var">x</span>
+                        `,
+                        options: ["5", "7", "8", "0"],
+                        correctAnswer: "8",
+                        explanation: "0 + 5 = 5. Then 5 + 2 = 7. Then 7 + 1 = 8.",
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "Level 5: Selection & Logic",
+                theory: "We can use 'if', 'elif', and 'else' inside loops or with lists. The 'in' operator checks if a value exists inside a list (e.g., `if 'a' in 'apple':`).",
+                questions: [
+                    {
+                        id: "L5Q1",
+                        type: "mcq",
+                        difficulty: "Medium",
+                        points: 150,
+                        question: "Which logical operator checks if a value exists inside a list?",
+                        options: ["exists", "has", "in", "check"],
+                        correctAnswer: "in",
+                        explanation: "We use 'in' to check membership. E.g., `if 'apple' in fruits:`.",
+                    },
+                    {
+                        id: "L5Q2",
+                        type: "scenario",
+                        difficulty: "High",
+                        points: 200,
+                        question: "What prints if the user inputs 2?",
+                        codeSnippet: `
+<span class="code-var">cars</span> = [<span class="code-string">'Ford'</span>, <span class="code-string">'BMW'</span>, <span class="code-string">'Audi'</span>, <span class="code-string">'Tesla'</span>]
+<span class="code-var">choice</span> = <span class="code-func">int</span>(<span class="code-func">input</span>())
+
+<span class="code-keyword">if</span> <span class="code-var">choice</span> < <span class="code-num">2</span>:
+    <span class="code-func">print</span>(<span class="code-string">"Budget"</span>)
+<span class="code-keyword">elif</span> <span class="code-var">cars</span>[<span class="code-var">choice</span>] == <span class="code-string">'Audi'</span>:
+    <span class="code-func">print</span>(<span class="code-string">"Executive"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"Electric"</span>)
+                        `,
+                        options: [
+                            "Budget",
+                            "Executive",
+                            "Electric",
+                            "Error"
+                        ],
+                        correctAnswer: "Executive",
+                        explanation: "Input is 2. The first 'if' (2 < 2) is False. The 'elif' checks cars[2]. cars[2] is 'Audi'. Condition is True.",
+                    },
+                    {
+                        id: "L5Q3",
+                        type: "mcq",
+                        difficulty: "High",
+                        points: 200,
+                        question: "Which code correctly checks if a list is empty?",
+                        options: [
+                            "if list == empty:",
+                            "if len(list) == 0:",
+                            "if list.is_empty():",
+                            "if list.count() == 0:"
+                        ],
+                        correctAnswer: "if len(list) == 0:",
+                        explanation: "We check the length using len(). If length is 0, the list is empty.",
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: "Level 6: Algorithms (Synthesis)",
+                theory: "Combining loops, lists, and logic allows us to write algorithms. Common algorithms include calculating totals, finding the maximum value, or filtering lists.",
+                questions: [
+                    {
+                        id: "L6Q1",
+                        type: "ordering",
+                        difficulty: "High",
+                        points: 200,
+                        question: "Reorder to calculate the total of the list.",
+                        steps: [
+                            "total = 0",
+                            "nums = [5, 2, 8]",
+                            "for n in nums:",
+                            "    total = total + n",
+                            "print(total)"
+                        ],
+                        correctOrder: ["nums = [5, 2, 8]", "total = 0", "for n in nums:", "    total = total + n", "print(total)"],
+                        explanation: "1. Create list. 2. Initialize total. 3. Loop. 4. Accumulate. 5. Print final result.",
+                    },
+                    {
+                        id: "L6Q2",
+                        type: "visual-diagnostic",
+                        difficulty: "High",
+                        points: 200,
+                        question: "Trace the list contents. What is the final list?",
+                        codeSnippet: `
+<span class="code-var">letters</span> = [<span class="code-string">'A'</span>, <span class="code-string">'B'</span>]
+<span class="code-var">letters</span>.<span class="code-func">append</span>(<span class="code-string">'C'</span>)
+<span class="code-var">letters</span>[<span class="code-num">0</span>] = <span class="code-string">'D'</span>
+<span class="code-var">letters</span>.<span class="code-func">pop</span>()
+                        `,
+                        options: [
+                            "['D', 'B']",
+                            "['A', 'B']",
+                            "['D', 'B', 'C']",
+                            "['A', 'B', 'C']"
+                        ],
+                        correctAnswer: "['D', 'B']",
+                        explanation: "Start: ['A', 'B']. Append 'C' -> ['A', 'B', 'C']. Index 0 becomes 'D' -> ['D', 'B', 'C']. Pop removes last ('C') -> ['D', 'B'].",
+                    },
+                    {
+                        id: "L6Q3",
+                        type: "ordering",
+                        difficulty: "High",
+                        points: 200,
+                        question: "Reorder to find the largest number (Max) in a list.",
+                        steps: [
+                            "highest = 0",
+                            "scores = [12, 45, 30]",
+                            "for s in scores:",
+                            "    if s > highest:",
+                            "        highest = s"
+                        ],
+                        correctOrder: ["scores = [12, 45, 30]", "highest = 0", "for s in scores:", "    if s > highest:", "        highest = s"],
+                        explanation: "This is the 'Linear Search for Max' algorithm. We initialize a variable 'highest' and update it whenever we find a larger number.",
+                    }
+                ]
+            }
+        ];
+
+        // --- STATE & CORE FUNCTIONS ---
+        let currentState = 'start';
+        let currentLevelIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let tempState = {};
+        const app = document.getElementById('app');
+        const scoreDisplay = document.getElementById('score-display');
+
+        function init() { renderStartScreen(); }
+        function goToLevelIntro() { currentState = 'level-intro'; renderLevelIntro(); }
+        function startLevel() { currentState = 'playing'; renderQuestion(); }
+        function updateScore(pts) { 
+            score += pts; 
+            scoreDisplay.textContent = score;
+            scoreDisplay.classList.add('text-green-400', 'scale-125');
+            setTimeout(() => scoreDisplay.classList.remove('text-green-400', 'scale-125'), 300);
+        }
+
+        // --- RENDERERS ---
+
+        function renderStartScreen() {
+            app.innerHTML = `
+                <div class="absolute top-10 left-10 text-slate-800 animate-pulse"><i data-lucide="code" width="120" height="120"></i></div>
+                <div class="absolute bottom-10 right-10 text-slate-800 animate-pulse delay-700"><i data-lucide="brackets" width="120" height="120"></i></div>
+
+                <div class="max-w-xl w-full bg-slate-900/90 backdrop-blur-sm p-8 rounded-xl shadow-2xl border border-yellow-500/30 z-10 fade-in">
+                    <div class="flex justify-center mb-6">
+                        <div class="p-4 bg-yellow-900/20 rounded-full border-2 border-yellow-500 pulse-ring">
+                            <i data-lucide="terminal" class="text-yellow-400 w-12 h-12"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-4xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                        PYTHON REVISION
+                    </h1>
+                    <p class="text-center text-yellow-600 font-bold tracking-widest mb-6">YEAR 9 // SEQUENCES & LISTS</p>
+                    
+                    <div class="space-y-4 mb-8 text-slate-400 text-sm">
+                        <div class="flex items-center gap-3 bg-slate-800 p-3 rounded hover:bg-slate-700 transition">
+                            <i data-lucide="list" class="text-blue-400 w-5 h-5"></i>
+                            <span>Recall: Indexing, Append, Pop, Insert</span>
+                        </div>
+                        <div class="flex items-center gap-3 bg-slate-800 p-3 rounded hover:bg-slate-700 transition">
+                            <i data-lucide="git-branch" class="text-green-400 w-5 h-5"></i>
+                            <span>Apply: Iteration & Conditionals</span>
+                        </div>
+                        <div class="flex items-center gap-3 bg-slate-800 p-3 rounded hover:bg-slate-700 transition">
+                            <i data-lucide="cpu" class="text-purple-400 w-5 h-5"></i>
+                            <span>Synthesize: Tracing Algorithms</span>
+                        </div>
+                    </div>
+
+                    <button onclick="goToLevelIntro()" class="w-full py-4 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2 group">
+                        <i data-lucide="play" class="group-hover:translate-x-1 transition-transform"></i>
+                        EXECUTE PROGRAM
+                    </button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderLevelIntro() {
+            const level = levels[currentLevelIndex];
+            app.innerHTML = `
+                <div class="max-w-2xl w-full bg-slate-900 p-8 rounded-xl border border-slate-700 shadow-2xl fade-in">
+                    <div class="flex items-center gap-3 mb-6">
+                        <i data-lucide="folder-open" class="text-purple-400 w-6 h-6"></i>
+                        <span class="text-xs font-bold text-purple-400 uppercase tracking-widest">Importing Module ${level.id}...</span>
+                    </div>
+                    
+                    <h2 class="text-3xl font-bold mb-6 text-white">${level.title}</h2>
+                    
+                    <div class="bg-slate-800/50 p-6 rounded-lg border-l-4 border-yellow-500 mb-8">
+                        <h3 class="text-yellow-400 font-bold mb-3 flex items-center gap-2 uppercase text-sm">
+                            <i data-lucide="book-open" class="w-4 h-4"></i> Documentation
+                        </h3>
+                        <p class="text-slate-300 leading-relaxed text-lg">
+                            ${level.theory}
+                        </p>
+                    </div>
+
+                    <button onclick="startLevel()" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2">
+                        START DEBUGGING <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderQuestion() {
+            const level = levels[currentLevelIndex];
+            const q = level.questions[currentQuestionIndex];
+            tempState = {}; 
+
+            const diffColor = q.difficulty === 'Low' ? 'blue' : q.difficulty === 'Medium' ? 'yellow' : 'red';
+            
+            // Code Block Rendering if snippet exists
+            const codeBlock = q.codeSnippet ? `
+                <div class="bg-slate-950 p-4 rounded-lg border border-slate-700 font-mono text-sm md:text-base mb-6 overflow-x-auto shadow-inner">
+                    <pre>${q.codeSnippet.trim()}</pre>
+                </div>
+            ` : '';
+
+            let interactionHTML = '';
+
+            if (q.type === 'mcq' || q.type === 'scenario' || q.type === 'visual-diagnostic') {
+                interactionHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                    ${q.options.map(opt => `
+                        <button onclick="submitAnswer('${opt.replace(/'/g, "\\'")}')" class="p-4 bg-slate-800 hover:bg-slate-700 hover:border-yellow-400 border-2 border-transparent rounded-lg text-left transition-all group w-full flex items-center gap-3">
+                            <div class="w-4 h-4 rounded-full border border-slate-500 group-hover:bg-yellow-400 group-hover:border-yellow-400"></div>
+                            <span class="font-mono text-sm">${opt}</span>
+                        </button>
+                    `).join('')}
+                </div>`;
+            } 
+            else if (q.type === 'fill-blank') {
+                // Fix: Check if input is embedded in snippet, otherwise render a standalone input
+                const hasEmbeddedInput = q.codeSnippet && q.codeSnippet.includes('blank-input-1');
+                const inputHTML = hasEmbeddedInput ? '' : `
+                    <div class="mb-6">
+                        <input type="text" id="blank-input-1" class="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-lg font-mono text-lg focus:outline-none focus:border-yellow-400 transition-colors text-white" placeholder="Type your answer..." autocomplete="off">
+                    </div>
+                `;
+
+                interactionHTML = `
+                    ${inputHTML}
+                    <div class="mt-6 flex justify-end">
+                        <button onclick="submitAnswer(document.getElementById('blank-input-1').value)" class="px-8 py-3 bg-yellow-600 hover:bg-yellow-500 rounded-lg font-bold text-white transition">SUBMIT</button>
+                    </div>`;
+            }
+            else if (q.type === 'matching') {
+                tempState.matches = {};
+                interactionHTML = `<div id="matching-area" class="flex flex-col gap-6 mt-4"></div>`;
+                setTimeout(() => renderMatching(), 0);
+            }
+            else if (q.type === 'ordering') {
+                tempState.order = [...q.steps].sort(() => Math.random() - 0.5);
+                interactionHTML = `
+                    <div id="ordering-area" class="flex flex-col gap-2 mt-4 font-mono text-sm"></div>
+                    <button onclick="submitOrdering()" class="mt-6 w-full py-4 bg-purple-600 hover:bg-purple-500 font-bold rounded-lg uppercase tracking-wider text-white">COMPILE</button>
+                `;
+                setTimeout(() => renderOrdering(), 0);
+            }
+
+            app.innerHTML = `
+                <div class="w-full bg-slate-900/50 p-6 md:p-8 rounded-2xl border border-slate-800 shadow-2xl backdrop-blur-sm fade-in">
+                    <div class="mb-6 border-b border-slate-800 pb-4 flex justify-between items-center">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-${diffColor}-500/20 text-${diffColor}-400 border border-${diffColor}-500/30">
+                            ${q.difficulty} Complexity
+                        </span>
+                        <span class="text-slate-500 font-bold text-sm">Value: ${q.points} pts</span>
+                    </div>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-100 mb-4">${q.question}</h2>
+                    ${codeBlock}
+                    ${interactionHTML}
+                </div>
+            `;
+            lucide.createIcons();
+            
+            // Auto focus blank input
+            const input = document.getElementById('blank-input-1');
+            if(input) {
+                input.focus();
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') submitAnswer(input.value);
+                });
+            }
+        }
+
+        // --- INTERACTIVE RENDERERS ---
+
+        function renderMatching() {
+            const q = levels[currentLevelIndex].questions[currentQuestionIndex];
+            const area = document.getElementById('matching-area');
+            if(!area) return;
+
+            const matches = tempState.matches || {};
+            const selectedTerm = tempState.selectedTerm;
+            const pairs = q.pairs;
+            
+            if (!tempState.rightOptions) tempState.rightOptions = [...pairs].map(p => p.match).sort(() => Math.random() - 0.5);
+            const rightOptions = tempState.rightOptions;
+            const allMatched = pairs.every(p => matches[p.term]);
+
+            area.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <h4 class="text-center text-xs uppercase text-slate-500 mb-2">Code Methods</h4>
+                        ${pairs.map(p => {
+                            let style = "bg-slate-800 border-slate-700 hover:border-slate-500";
+                            if (matches[p.term]) style = "matching-matched";
+                            else if (selectedTerm === p.term) style = "matching-selected";
+                            return `<button onclick="selectMatchTerm('${p.term.replace(/'/g, "\\'")}')" class="w-full p-3 rounded-lg border-2 text-left font-mono text-sm transition-all ${style}" ${matches[p.term] ? 'disabled' : ''}>${p.term}</button>`;
+                        }).join('')}
+                    </div>
+                    <div class="space-y-3">
+                        <h4 class="text-center text-xs uppercase text-slate-500 mb-2">Descriptions</h4>
+                        ${rightOptions.map(opt => {
+                            const isTaken = Object.values(matches).includes(opt);
+                            let style = "bg-slate-800 border-slate-600";
+                            if (isTaken) style = "bg-slate-800/50 border-transparent text-slate-600 cursor-not-allowed";
+                            else if (selectedTerm) style = "bg-slate-800 border-slate-600 hover:border-yellow-400 cursor-pointer";
+                            return `<button onclick="selectMatchDefinition('${opt.replace(/'/g, "\\'")}')" ${isTaken || !selectedTerm ? 'disabled' : ''} class="w-full p-3 rounded-lg border-2 text-left text-sm transition-all ${style}">${opt}</button>`;
+                        }).join('')}
+                    </div>
+                </div>
+                ${allMatched ? `<button onclick="submitMatching()" class="w-full py-4 bg-purple-600 hover:bg-purple-500 font-bold rounded-lg text-white mt-4">VERIFY LOGIC</button>` : ''}
+            `;
+        }
+
+        function selectMatchTerm(term) {
+            if (tempState.matches[term]) delete tempState.matches[term];
+            else if (tempState.selectedTerm === term) tempState.selectedTerm = null;
+            else tempState.selectedTerm = term;
+            renderMatching();
+        }
+
+        function selectMatchDefinition(def) {
+            if (tempState.selectedTerm) {
+                tempState.matches[tempState.selectedTerm] = def;
+                tempState.selectedTerm = null;
+                renderMatching();
+            }
+        }
+
+        function submitMatching() {
+            const q = levels[currentLevelIndex].questions[currentQuestionIndex];
+            const isCorrect = q.pairs.every(p => tempState.matches[p.term] === p.match);
+            const correctMapping = {};
+            q.pairs.forEach(p => correctMapping[p.term] = p.match);
+            processResult(isCorrect, q, correctMapping);
+        }
+
+        function renderOrdering() {
+            const area = document.getElementById('ordering-area');
+            const order = tempState.order;
+            
+            area.innerHTML = `
+                <p class="text-sm text-slate-400 mb-2">Reorder lines to fix the algorithm:</p>
+                ${order.map((step, idx) => `
+                    <div class="flex items-center gap-3 p-3 bg-slate-800 rounded border border-slate-700">
+                        <div class="flex flex-col gap-1">
+                            <button onclick="moveOrder(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="hover:text-yellow-400 disabled:opacity-20"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+                            <button onclick="moveOrder(${idx}, 1)" ${idx === order.length - 1 ? 'disabled' : ''} class="hover:text-yellow-400 disabled:opacity-20"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+                        </div>
+                        <div class="flex-1 font-mono text-slate-300 select-none">${step}</div>
+                    </div>
+                `).join('')}
+            `;
+            lucide.createIcons();
+        }
+
+        function moveOrder(idx, dir) {
+            const order = tempState.order;
+            const newIdx = idx + dir;
+            if (newIdx >= 0 && newIdx < order.length) {
+                [order[idx], order[newIdx]] = [order[newIdx], order[idx]];
+                renderOrdering();
+            }
+        }
+
+        function submitOrdering() {
+            const q = levels[currentLevelIndex].questions[currentQuestionIndex];
+            // Sort both arrays to remove potential variation if logic allows, but here exact order matters
+            // Just comparing exact stringified arrays
+            const isCorrect = JSON.stringify(tempState.order) === JSON.stringify(q.correctOrder);
+            processResult(isCorrect, q, q.correctOrder);
+        }
+
+        // --- GENERAL LOGIC ---
+
+        function submitAnswer(answer) {
+            if(!answer) return;
+            const q = levels[currentLevelIndex].questions[currentQuestionIndex];
+            // Simple validation
+            let isCorrect = false;
+            if (q.type === 'fill-blank') {
+                isCorrect = answer.trim().toLowerCase() === q.correctAnswer.toLowerCase();
+            } else {
+                isCorrect = answer === q.correctAnswer;
+            }
+            processResult(isCorrect, q);
+        }
+
+        function processResult(isCorrect, question, correctAnswerOverride = null) {
+            if (isCorrect) updateScore(question.points);
+            
+            let answerDisplay = '';
+            const ans = correctAnswerOverride !== null ? correctAnswerOverride : question.correctAnswer;
+            
+            if (typeof ans === 'object' && ans !== null && !Array.isArray(ans)) {
+                 answerDisplay = `<ul class="list-none space-y-1 mt-2 text-slate-300 ml-4 font-mono text-xs">`;
+                 for (const key in ans) answerDisplay += `<li>${key} -> ${ans[key]}</li>`;
+                 answerDisplay += `</ul>`;
+            } else if (Array.isArray(ans)) {
+                answerDisplay = `<div class="bg-slate-950 p-3 mt-2 rounded border border-slate-700 font-mono text-xs text-green-400"><pre>${ans.join('\n')}</pre></div>`;
+            } else {
+                answerDisplay = `<span class="text-green-400 font-mono ml-2">${ans.toString()}</span>`;
+            }
+
+            const colorClass = isCorrect ? 'green' : 'red';
+            const icon = isCorrect ? 'check-circle' : 'x-circle';
+
+            app.innerHTML = `
+                <div class="max-w-xl w-full p-8 rounded-xl border-2 shadow-2xl fade-in bg-${colorClass}-950/40 border-${colorClass}-500">
+                    <div class="flex items-center gap-4 mb-6">
+                        <i data-lucide="${icon}" class="text-${colorClass}-500 w-14 h-14"></i>
+                        <div>
+                            <h2 class="text-3xl font-bold uppercase">${isCorrect ? 'SUCCESS' : 'RUNTIME ERROR'}</h2>
+                            <p class="text-xl font-bold ${isCorrect ? 'text-green-400' : 'text-red-400'}">${isCorrect ? `+${question.points} PTS` : '0 PTS'}</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/80 p-6 rounded-lg mb-6 border border-slate-700/50">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase mb-2">Console Output</h3>
+                        <p class="text-slate-200 text-lg leading-relaxed">${question.explanation}</p>
+                        ${!isCorrect ? `<div class="mt-4 pt-4 border-t border-slate-700"><span class="text-slate-500 font-bold text-xs uppercase">Expected Output:</span>${answerDisplay}</div>` : ''}
+                    </div>
+                    <button onclick="nextQuestion()" class="w-full py-4 font-bold rounded-lg uppercase tracking-wide transition-colors text-white ${isCorrect ? 'bg-green-600 hover:bg-green-500' : 'bg-slate-600 hover:bg-slate-500'}">CONTINUE</button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < levels[currentLevelIndex].questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                renderLevelComplete();
+            }
+        }
+
+        function renderLevelComplete() {
+            app.innerHTML = `
+                <div class="max-w-md w-full bg-slate-900 p-8 rounded-xl text-center border border-slate-700 fade-in">
+                    <div class="w-16 h-16 bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="check-circle" class="text-green-400 w-8 h-8"></i></div>
+                    <h2 class="text-2xl font-bold mb-2 text-white">Module Compiled</h2>
+                    <p class="text-slate-400 mb-8">Unit tests passed successfully.</p>
+                    <div class="mb-8 p-4 bg-slate-800 rounded-lg">
+                        <p class="text-sm text-slate-500 uppercase">Current Score</p>
+                        <p class="text-4xl font-bold text-yellow-400">${score}</p>
+                    </div>
+                    <button onclick="nextLevel()" class="w-full py-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded-lg">LOAD NEXT MODULE</button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function nextLevel() {
+            if (currentLevelIndex < levels.length - 1) {
+                currentLevelIndex++;
+                currentQuestionIndex = 0;
+                renderLevelIntro();
+            } else {
+                renderGameOver();
+            }
+        }
+
+        function renderGameOver() {
+            app.innerHTML = `
+                <div class="max-w-lg w-full bg-slate-900 p-8 rounded-xl text-center border-2 border-yellow-500/50 shadow-2xl shadow-yellow-900/20 fade-in">
+                    <div class="flex justify-center mb-6"><i data-lucide="trophy" class="text-yellow-400 w-16 h-16"></i></div>
+                    <h2 class="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">PROGRAM COMPLETE</h2>
+                    <p class="text-slate-400 mb-8">You have successfully revised Python sequences.</p>
+                    <div class="bg-slate-800 p-8 rounded-lg mb-8 border border-slate-700">
+                        <p class="text-sm text-slate-500 uppercase tracking-widest mb-2">Final Score</p>
+                        <p class="text-6xl font-bold text-white">${score}</p>
+                    </div>
+                    <button onclick="restartGame()" class="px-8 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-bold flex items-center justify-center gap-2 mx-auto transition-colors"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> RESTART</button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function restartGame() {
+            score = 0;
+            currentLevelIndex = 0;
+            currentQuestionIndex = 0;
+            scoreDisplay.textContent = '0';
+            renderStartScreen();
+        }
+
+        // --- INIT ---
+        init();
+
+    </script>
+</body>
+</html>
